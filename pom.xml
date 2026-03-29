@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.gw</groupId>
-    <artifactId>gw-server</artifactId>
+    <artifactId>guanwang_api</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
-    <description>Web3 Wallet Signature Auth Server</description>
+    <description>guanwang API Server</description>
 
     <properties>
         <java.version>1.8</java.version>
