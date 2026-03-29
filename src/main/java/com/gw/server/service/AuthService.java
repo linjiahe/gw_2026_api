@@ -19,6 +19,7 @@ import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -125,13 +126,19 @@ public class AuthService {
         // 5. Generate new nonce for next login (prevent reuse)
         String newNonce = UUID.randomUUID().toString();
         user.setNonce(newNonce);
+
+        // 6. Check if new user (last_login_at is null)
+        boolean isNewUser = user.getLastLoginAt() == null;
+
+        // 7. Update last_login_at and nonce
+        user.setLastLoginAt(LocalDateTime.now());
         userMapper.updateById(user);
 
-        // 6. Generate JWT
+        // 8. Generate JWT
         String token = jwtTokenProvider.generateToken(user.getId(), user.getWalletAddress());
 
-        log.info("User logged in: {}", normalizedAddress);
-        return new LoginResult(token, user.getId(), normalizedAddress);
+        log.info("User logged in: {}, isNewUser: {}", normalizedAddress, isNewUser);
+        return new LoginResult(token, user.getId(), normalizedAddress, isNewUser);
     }
 
     /**
@@ -184,15 +191,18 @@ public class AuthService {
         private final String token;
         private final Long userId;
         private final String address;
+        private final boolean isNewUser;
 
-        public LoginResult(String token, Long userId, String address) {
+        public LoginResult(String token, Long userId, String address, boolean isNewUser) {
             this.token = token;
             this.userId = userId;
             this.address = address;
+            this.isNewUser = isNewUser;
         }
 
         public String getToken() { return token; }
         public Long getUserId() { return userId; }
         public String getAddress() { return address; }
+        public boolean isNewUser() { return isNewUser; }
     }
 }

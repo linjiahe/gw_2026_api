@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("user")
+@TableName("users")
 public class User {
 
     @TableId(type = IdType.AUTO)
@@ -31,4 +31,6 @@ public class User {
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
+
+    private LocalDateTime lastLoginAt;
 }

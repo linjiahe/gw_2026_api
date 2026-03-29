@@ -37,7 +37,7 @@ public class AuthController {
                 .token(result.getToken())
                 .userId(result.getUserId())
                 .address(result.getAddress())
-                .isNewUser(false)
+                .isNewUser(result.isNewUser())
                 .build();
 
         return Result.ok(response);
