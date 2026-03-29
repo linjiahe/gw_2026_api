@@ -10,26 +10,17 @@ import java.time.LocalDateTime;
 public class User {
 
     @TableId(type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
+    @TableField("wallet_address_id")
     private String walletAddress;
 
     private String nonce;
 
-    private String nickname;
-
-    private String avatar;
-
-    private String email;
-
-    private String phone;
-
     private Integer status;
 
-    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
 
     private LocalDateTime lastLoginAt;

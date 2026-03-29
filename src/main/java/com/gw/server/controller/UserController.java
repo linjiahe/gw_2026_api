@@ -25,16 +25,12 @@ public class UserController {
     @ApiOperation("获取用户信息")
     @GetMapping("/profile")
     public Result<Map<String, Object>> getProfile(HttpServletRequest request) {
-        Long userId = (Long) request.getAttribute("userId");
+        Integer userId = (Integer) request.getAttribute("userId");
         User user = userService.getUserById(userId);
 
         Map<String, Object> profile = new HashMap<>();
         profile.put("id", user.getId());
         profile.put("address", user.getWalletAddress());
-        profile.put("nickname", user.getNickname());
-        profile.put("avatar", user.getAvatar());
-        profile.put("email", user.getEmail());
-        profile.put("phone", user.getPhone());
         profile.put("status", user.getStatus());
         profile.put("createdAt", user.getCreatedAt());
 

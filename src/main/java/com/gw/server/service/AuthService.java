@@ -189,11 +189,11 @@ public class AuthService {
 
     public static class LoginResult {
         private final String token;
-        private final Long userId;
+        private final Integer userId;
         private final String address;
         private final boolean isNewUser;
 
-        public LoginResult(String token, Long userId, String address, boolean isNewUser) {
+        public LoginResult(String token, Integer userId, String address, boolean isNewUser) {
             this.token = token;
             this.userId = userId;
             this.address = address;
@@ -201,7 +201,7 @@ public class AuthService {
         }
 
         public String getToken() { return token; }
-        public Long getUserId() { return userId; }
+        public Integer getUserId() { return userId; }
         public String getAddress() { return address; }
         public boolean isNewUser() { return isNewUser; }
     }

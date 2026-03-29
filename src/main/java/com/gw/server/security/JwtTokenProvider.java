@@ -33,7 +33,7 @@ public class JwtTokenProvider {
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(Long userId, String walletAddress) {
+    public String generateToken(Integer userId, String walletAddress) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtConfig.getExpiration());
 
@@ -46,9 +46,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Long getUserIdFromToken(String token) {
+    public Integer getUserIdFromToken(String token) {
         Claims claims = parseToken(token);
-        return Long.parseLong(claims.getSubject());
+        return Integer.parseInt(claims.getSubject());
     }
 
     public String getAddressFromToken(String token) {

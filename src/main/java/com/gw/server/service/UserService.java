@@ -15,7 +15,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public User getUserById(Long userId) {
+    public User getUserById(Integer userId) {
         User user = userMapper.selectById(userId);
         if (user == null) {
             throw new BusinessException("用户不存在");

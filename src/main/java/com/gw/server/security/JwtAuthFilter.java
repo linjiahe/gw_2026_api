@@ -37,7 +37,7 @@ public class JwtAuthFilter implements HandlerInterceptor {
         }
 
         // Store userId and address in request attributes for controllers to use
-        Long userId = jwtTokenProvider.getUserIdFromToken(token);
+        Integer userId = jwtTokenProvider.getUserIdFromToken(token);
         String address = jwtTokenProvider.getAddressFromToken(token);
         request.setAttribute("userId", userId);
         request.setAttribute("walletAddress", address);

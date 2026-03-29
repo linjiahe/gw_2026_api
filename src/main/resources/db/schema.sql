@@ -2,18 +2,14 @@ CREATE DATABASE IF NOT EXISTS `gw_admin` DEFAULT CHARACTER SET utf8mb4 COLLATE u
 USE `gw_admin`;
 
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-  `wallet_address` VARCHAR(42) NOT NULL COMMENT '钱包地址',
+  `id` INT PRIMARY KEY AUTO_INCREMENT,
+  `wallet_address_id` VARCHAR(42) DEFAULT NULL COMMENT '钱包地址',
   `nonce` VARCHAR(64) DEFAULT NULL COMMENT '当前待签名 nonce',
-  `nickname` VARCHAR(50) DEFAULT NULL COMMENT '昵称',
-  `avatar` VARCHAR(255) DEFAULT NULL COMMENT '头像URL',
-  `email` VARCHAR(100) DEFAULT NULL COMMENT '邮箱',
-  `phone` VARCHAR(20) DEFAULT NULL COMMENT '手机号',
   `status` TINYINT NOT NULL DEFAULT 1 COMMENT '1-正常 0-禁用',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `last_login_at` DATETIME DEFAULT NULL COMMENT '最后登录时间',
-  UNIQUE INDEX `uk_wallet_address` (`wallet_address`)
+  UNIQUE INDEX `uk_wallet_address_id` (`wallet_address_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 CREATE TABLE IF NOT EXISTS `nonce_record` (
