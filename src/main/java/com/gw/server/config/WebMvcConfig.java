@@ -25,7 +25,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtAuthFilter)
                 .addPathPatterns("/api/**")
                 .excludePathPatterns(
-                        "/api/auth/**"
+                        "/api/auth/**",
+                        "/api/nft/presale/address",
+                        "/api/nft/address",
+                        "/api/nft/presale/records",
+                        "/api/nft/records"
                 );
     }
 

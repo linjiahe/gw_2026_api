@@ -3,25 +3,23 @@ package com.gw.server.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("users")
-public class User {
+@TableName("nft_level")
+public class NftLevel {
 
     @TableId(type = IdType.AUTO)
     private Integer id;
 
-    @TableField("wallet_address")
-    private String walletAddress;
+    private BigDecimal price;
 
-    private String nonce;
+    private Integer totalQuantity;
 
-    private Integer status;
+    private Integer remainingQuantity;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    private LocalDateTime lastLoginAt;
 }

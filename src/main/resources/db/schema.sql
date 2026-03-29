@@ -3,20 +3,70 @@ USE `gw_admin`;
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
-  `wallet_address_id` VARCHAR(42) DEFAULT NULL COMMENT '钱包地址',
+  `wallet_address` VARCHAR(255) DEFAULT NULL COMMENT '钱包地址',
   `nonce` VARCHAR(64) DEFAULT NULL COMMENT '当前待签名 nonce',
   `status` TINYINT NOT NULL DEFAULT 1 COMMENT '1-正常 0-禁用',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `last_login_at` DATETIME DEFAULT NULL COMMENT '最后登录时间',
-  UNIQUE INDEX `uk_wallet_address_id` (`wallet_address_id`)
+  UNIQUE INDEX `uk_wallet_address` (`wallet_address`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 CREATE TABLE IF NOT EXISTS `nonce_record` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
-  `wallet_address` VARCHAR(42) NOT NULL COMMENT '钱包地址',
+  `wallet_address` VARCHAR(255) NOT NULL COMMENT '钱包地址',
   `nonce` VARCHAR(64) NOT NULL COMMENT 'nonce值',
   `used` TINYINT NOT NULL DEFAULT 0 COMMENT '0-未使用 1-已使用',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   INDEX `idx_nonce` (`nonce`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Nonce记录表(防重放)';
+
+-- NFT等级表
+CREATE TABLE IF NOT EXISTS `nft_level` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+  `price` DECIMAL(20,6) NOT NULL COMMENT '价格',
+  `total_quantity` INT NOT NULL COMMENT '总数量',
+  `remaining_quantity` INT NOT NULL COMMENT '剩余数量',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='NFT等级表';
+
+-- 预售记录表
+CREATE TABLE IF NOT EXISTS `presale_record` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+  `nft_level_id` INT NOT NULL COMMENT 'NFT等级ID',
+  `wallet_address` VARCHAR(255) NOT NULL COMMENT '钱包地址',
+  `amount` DECIMAL(20,6) NOT NULL COMMENT '耗费金额',
+  `quantity` INT NOT NULL COMMENT '数量',
+  `status` TINYINT NOT NULL DEFAULT 0 COMMENT '状态 0:待确认 1:成功 2:异常',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  INDEX `idx_wallet_address` (`wallet_address`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='预售记录表';
+
+-- NFT记录表
+CREATE TABLE IF NOT EXISTS `nft_record` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+  `nft_level_id` INT NOT NULL COMMENT 'NFT等级ID',
+  `wallet_address` VARCHAR(255) NOT NULL COMMENT '钱包地址',
+  `amount` DECIMAL(20,6) NOT NULL COMMENT '耗费金额',
+  `quantity` INT NOT NULL COMMENT '数量',
+  `status` TINYINT NOT NULL DEFAULT 0 COMMENT '状态 0:待确认 1:成功 2:异常',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  INDEX `idx_wallet_address` (`wallet_address`),
+  INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='NFT记录表';
+
+-- 预售收款地址表
+CREATE TABLE IF NOT EXISTS `presale_address` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+  `address` VARCHAR(255) NOT NULL COMMENT '收款地址'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='预售收款地址表';
+
+-- NFT收款地址表
+CREATE TABLE IF NOT EXISTS `nft_address` (
+  `id` INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+  `address` VARCHAR(255) NOT NULL COMMENT '收款地址'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='NFT收款地址表';
