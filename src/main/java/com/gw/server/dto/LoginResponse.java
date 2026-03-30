@@ -15,4 +15,5 @@ public class LoginResponse {
     private boolean isNewUser;
     private Integer userId;
     private String address;
+    private String inviteCode;
 }

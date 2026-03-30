@@ -20,4 +20,7 @@ public class LoginRequest {
     @NotBlank(message = "签名不能为空")
     @Pattern(regexp = "^0x[a-fA-F0-9]+$", message = "签名格式不正确")
     private String signature;
+
+    @ApiModelProperty(value = "邀请码（选填，首次登录时绑定）")
+    private String inviteCode;
 }
