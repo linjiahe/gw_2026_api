@@ -146,7 +146,8 @@ public class AuthService {
      */
     private String recoverAddress(String nonce, String signatureHex) {
         // MetaMask personal_sign prepends: "\u0019Ethereum Signed Message:\n" + message.length + message
-        String message = "Sign this nonce to login: " + nonce;
+//        String message = "Sign this nonce to login: " + nonce;
+        String message = nonce;
         byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
 
         // Build prefixed message hash (EIP-191 personal_sign)
