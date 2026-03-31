@@ -19,8 +19,16 @@ public class User {
 
     private Integer status;
 
+    @TableField("invite_code")
+    private String inviteCode;
+
+    @TableField("invited_by")
+    private Integer invitedBy;
+
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
 
     private LocalDateTime lastLoginAt;

@@ -22,11 +22,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Slf4j
 @Service
 public class AuthService {
+
+    private static final String INVITE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    private static final int INVITE_CODE_LENGTH = 8;
 
     private final UserMapper userMapper;
     private final NonceRecordMapper nonceRecordMapper;
@@ -54,6 +58,7 @@ public class AuthService {
             user = new User();
             user.setWalletAddress(normalizedAddress);
             user.setStatus(1);
+            user.setInviteCode(generateInviteCode());
             userMapper.insert(user);
             isNewUser = true;
             log.info("New user registered: {}", normalizedAddress);
@@ -86,7 +91,7 @@ public class AuthService {
      * Verify signature and login
      */
     @Transactional
-    public LoginResult login(String address, String signature) {
+    public LoginResult login(String address, String signature, String inviteCode) {
         String normalizedAddress = address.toLowerCase();
 
         // 1. Find user
@@ -130,15 +135,30 @@ public class AuthService {
         // 6. Check if new user (last_login_at is null)
         boolean isNewUser = user.getLastLoginAt() == null;
 
-        // 7. Update last_login_at and nonce
+        // 7. Bind invite code (only on first login)
+        if (isNewUser && inviteCode != null && !inviteCode.trim().isEmpty()) {
+            User inviter = userMapper.selectOne(
+                    new LambdaQueryWrapper<User>().eq(User::getInviteCode, inviteCode.trim())
+            );
+            if (inviter == null) {
+                throw new BusinessException("邀请码无效");
+            }
+            if (inviter.getId().equals(user.getId())) {
+                throw new BusinessException("不能使用自己的邀请码");
+            }
+            user.setInvitedBy(inviter.getId());
+            log.info("User {} invited by {} (code: {})", normalizedAddress, inviter.getWalletAddress(), inviteCode);
+        }
+
+        // 8. Update last_login_at and nonce
         user.setLastLoginAt(LocalDateTime.now());
         userMapper.updateById(user);
 
-        // 8. Generate JWT
+        // 9. Generate JWT
         String token = jwtTokenProvider.generateToken(user.getId(), user.getWalletAddress());
 
         log.info("User logged in: {}, isNewUser: {}", normalizedAddress, isNewUser);
-        return new LoginResult(token, user.getId(), normalizedAddress, isNewUser);
+        return new LoginResult(token, user.getId(), normalizedAddress, isNewUser, user.getInviteCode());
     }
 
     /**
@@ -188,22 +208,37 @@ public class AuthService {
         return "0x" + Keys.getAddress(recoveredKey);
     }
 
+    /**
+     * Generate a random invite code (8 chars, no ambiguous chars like 0/O/1/I)
+     */
+    private String generateInviteCode() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(INVITE_CODE_LENGTH);
+        for (int i = 0; i < INVITE_CODE_LENGTH; i++) {
+            sb.append(INVITE_CHARS.charAt(random.nextInt(INVITE_CHARS.length())));
+        }
+        return sb.toString();
+    }
+
     public static class LoginResult {
         private final String token;
         private final Integer userId;
         private final String address;
         private final boolean isNewUser;
+        private final String inviteCode;
 
-        public LoginResult(String token, Integer userId, String address, boolean isNewUser) {
+        public LoginResult(String token, Integer userId, String address, boolean isNewUser, String inviteCode) {
             this.token = token;
             this.userId = userId;
             this.address = address;
             this.isNewUser = isNewUser;
+            this.inviteCode = inviteCode;
         }
 
         public String getToken() { return token; }
         public Integer getUserId() { return userId; }
         public String getAddress() { return address; }
         public boolean isNewUser() { return isNewUser; }
+        public String getInviteCode() { return inviteCode; }
     }
 }

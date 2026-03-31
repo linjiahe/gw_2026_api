@@ -31,13 +31,16 @@ public class AuthController {
     @ApiOperation("签名登录")
     @PostMapping("/login")
     public Result<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        AuthService.LoginResult result = authService.login(request.getAddress(), request.getSignature());
+        AuthService.LoginResult result = authService.login(
+                request.getAddress(), request.getSignature(), request.getInviteCode()
+        );
 
         LoginResponse response = LoginResponse.builder()
                 .token(result.getToken())
                 .userId(result.getUserId())
                 .address(result.getAddress())
                 .isNewUser(result.isNewUser())
+                .inviteCode(result.getInviteCode())
                 .build();
 
         return Result.ok(response);
