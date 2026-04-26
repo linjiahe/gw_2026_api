@@ -21,14 +21,14 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @ApiOperation("获取nonce")
+    @ApiOperation(value = "获取nonce", notes = "根据钱包地址生成签名用的随机nonce，用于后续登录签名验证")
     @PostMapping("/nonce")
     public Result<Map<String, String>> getNonce(@Valid @RequestBody NonceRequest request) {
         String nonce = authService.generateNonce(request.getAddress());
         return Result.ok(Collections.singletonMap("nonce", nonce));
     }
 
-    @ApiOperation("签名登录")
+    @ApiOperation(value = "签名登录", notes = "使用钱包签名进行登录。首次登录自动注册并返回isNewUser=true；可选传入inviteCode绑定邀请人。返回JWT令牌用于后续鉴权。")
     @PostMapping("/login")
     public Result<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthService.LoginResult result = authService.login(
