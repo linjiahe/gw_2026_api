@@ -36,6 +36,7 @@ public class UserController {
         profile.put("address", user.getWalletAddress());
         profile.put("status", user.getStatus());
         profile.put("createdAt", user.getCreatedAt());
+        profile.put("inviteCode", user.getInviteCode());
 
         return Result.ok(profile);
     }
