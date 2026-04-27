@@ -125,6 +125,13 @@ public class NftService {
         return PageResult.of(page);
     }
 
+    // ========== 9. NFT等级列表 ==========
+    public List<NftLevel> getNftLevels() {
+        return nftLevelMapper.selectList(
+                new LambdaQueryWrapper<NftLevel>().orderByAsc(NftLevel::getId)
+        );
+    }
+
     private NftLevel getLevelOrThrow(Integer nftLevelId) {
         NftLevel level = nftLevelMapper.selectById(nftLevelId);
         if (level == null) {

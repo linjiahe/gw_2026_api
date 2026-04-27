@@ -1,6 +1,7 @@
 package com.gw.server.controller;
 
 import com.gw.server.dto.*;
+import com.gw.server.entity.NftLevel;
 import com.gw.server.entity.NftRecord;
 import com.gw.server.entity.PresaleRecord;
 import com.gw.server.service.NftService;
@@ -105,5 +106,12 @@ public class NftController {
             HttpServletRequest httpRequest) {
         String address = (String) httpRequest.getAttribute("walletAddress");
         return Result.ok(nftService.getMyNftRecords(address, page, size));
+    }
+
+    // ========== 9. NFT等级列表 ==========
+    @ApiOperation(value = "NFT等级列表", notes = "公开接口。返回所有NFT等级信息，包含价格、总量、剩余数量，按等级ID升序。")
+    @GetMapping("/levels")
+    public Result<List<NftLevel>> getNftLevels() {
+        return Result.ok(nftService.getNftLevels());
     }
 }
