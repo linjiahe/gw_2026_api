@@ -135,8 +135,8 @@ public class AuthService {
         // 6. Check if new user (last_login_at is null)
         boolean isNewUser = user.getLastLoginAt() == null;
 
-        // 7. Bind invite code (only on first login)
-        if (isNewUser && inviteCode != null && !inviteCode.trim().isEmpty()) {
+        // 7. Bind invite code (only when not yet bound)
+        if (user.getInvitedBy() == null && inviteCode != null && !inviteCode.trim().isEmpty()) {
             User inviter = userMapper.selectOne(
                     new LambdaQueryWrapper<User>().eq(User::getInviteCode, inviteCode.trim())
             );
