@@ -137,17 +137,19 @@ public class AuthService {
 
         // 7. Bind invite code (only when not yet bound)
         if (user.getInvitedBy() == null && inviteCode != null && !inviteCode.trim().isEmpty()) {
-            User inviter = userMapper.selectOne(
-                    new LambdaQueryWrapper<User>().eq(User::getInviteCode, inviteCode.trim())
-            );
-            if (inviter == null) {
-                throw new BusinessException("邀请码无效");
+            // Skip if user passes their own invite code
+            if (inviteCode.trim().equalsIgnoreCase(user.getInviteCode())) {
+                log.warn("User {} passed their own invite code, skipping", normalizedAddress);
+            } else {
+                User inviter = userMapper.selectOne(
+                        new LambdaQueryWrapper<User>().eq(User::getInviteCode, inviteCode.trim())
+                );
+                if (inviter == null) {
+                    throw new BusinessException("邀请码无效");
+                }
+                user.setInvitedBy(inviter.getId());
+                log.info("User {} invited by {} (code: {})", normalizedAddress, inviter.getWalletAddress(), inviteCode);
             }
-            if (inviter.getId().equals(user.getId())) {
-                throw new BusinessException("不能使用自己的邀请码");
-            }
-            user.setInvitedBy(inviter.getId());
-            log.info("User {} invited by {} (code: {})", normalizedAddress, inviter.getWalletAddress(), inviteCode);
         }
 
         // 8. Update last_login_at and nonce
@@ -210,14 +212,25 @@ public class AuthService {
 
     /**
      * Generate a random invite code (8 chars, no ambiguous chars like 0/O/1/I)
+     * Ensures uniqueness by checking against existing codes in the database.
      */
     private String generateInviteCode() {
         Random random = new Random();
-        StringBuilder sb = new StringBuilder(INVITE_CODE_LENGTH);
-        for (int i = 0; i < INVITE_CODE_LENGTH; i++) {
-            sb.append(INVITE_CHARS.charAt(random.nextInt(INVITE_CHARS.length())));
+        for (int attempt = 0; attempt < 10; attempt++) {
+            StringBuilder sb = new StringBuilder(INVITE_CODE_LENGTH);
+            for (int i = 0; i < INVITE_CODE_LENGTH; i++) {
+                sb.append(INVITE_CHARS.charAt(random.nextInt(INVITE_CHARS.length())));
+            }
+            String code = sb.toString();
+            Long count = userMapper.selectCount(
+                    new LambdaQueryWrapper<User>().eq(User::getInviteCode, code)
+            );
+            if (count == null || count == 0) {
+                return code;
+            }
+            log.warn("Invite code collision detected: {}, retrying ({}/10)", code, attempt + 1);
         }
-        return sb.toString();
+        throw new BusinessException("邀请码生成失败，请重试");
     }
 
     public static class LoginResult {
