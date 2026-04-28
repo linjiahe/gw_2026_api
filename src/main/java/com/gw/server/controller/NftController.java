@@ -33,6 +33,8 @@ public class NftController {
     @PostMapping("/presale/create")
     public Result<Void> createPresaleRecord(@Valid @RequestBody CreatePresaleRequest request,
                                             HttpServletRequest httpRequest) {
+        // 根据哈希验证是否成功
+
         String address = (String) httpRequest.getAttribute("walletAddress");
         nftService.createPresaleRecord(address, request.getNftLevelId(), request.getQuantity());
         return Result.ok();
