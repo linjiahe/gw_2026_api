@@ -52,13 +52,13 @@ public class NftController {
         return Result.ok();
     }
 
-    // ========== 3. 预售地址随机获取 ==========
-    @ApiOperation(value = "获取随机预售收款地址", notes = "公开接口。从预售地址池中随机返回一个收款钱包地址，用于前端展示打款目标。")
-    @GetMapping("/presale/address")
-    public Result<Map<String, String>> getRandomPresaleAddress() {
-        String address = nftService.getRandomPresaleAddress();
-        return Result.ok(Collections.singletonMap("address", address));
-    }
+//    // ========== 3. 预售地址随机获取 ==========
+//    @ApiOperation(value = "获取随机预售收款地址", notes = "公开接口。从预售地址池中随机返回一个收款钱包地址，用于前端展示打款目标。")
+//    @GetMapping("/presale/address")
+//    public Result<Map<String, String>> getRandomPresaleAddress() {
+//        String address = nftService.getRandomPresaleAddress();
+//        return Result.ok(Collections.singletonMap("address", address));
+//    }
 
     // ========== 4. NFT地址随机获取 ==========
     @ApiOperation(value = "获取随机NFT收款地址", notes = "公开接口。从NFT地址池中随机返回一个收款钱包地址，用于前端展示打款目标。")
