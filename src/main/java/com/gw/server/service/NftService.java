@@ -37,7 +37,7 @@ public class NftService {
 
     // ========== 1. 创建预售记录 ==========
     @Transactional
-    public void createPresaleRecord(String walletAddress, Integer nftLevelId, Integer quantity) {
+    public void createPresaleRecord(String walletAddress, Integer nftLevelId, Integer quantity,String haxi) {
         NftLevel level = getLevelOrThrow(nftLevelId);
         BigDecimal amount = level.getPrice().multiply(BigDecimal.valueOf(quantity));
 
@@ -46,6 +46,7 @@ public class NftService {
         record.setWalletAddress(walletAddress.toLowerCase());
         record.setAmount(amount);
         record.setQuantity(quantity);
+        record.setHaxi(haxi);
         record.setStatus(0);
         record.setCreatedAt(LocalDateTime.now());
         record.setUpdatedAt(LocalDateTime.now());
@@ -54,7 +55,7 @@ public class NftService {
 
     // ========== 2. 创建NFT记录 ==========
     @Transactional
-    public void createNftRecord(String walletAddress, Integer nftLevelId, Integer quantity) {
+    public void createNftRecord(String walletAddress, Integer nftLevelId, Integer quantity,String haxi) {
         NftLevel level = getLevelOrThrow(nftLevelId);
         BigDecimal amount = level.getPrice().multiply(BigDecimal.valueOf(quantity));
 
@@ -64,6 +65,7 @@ public class NftService {
         record.setAmount(amount);
         record.setQuantity(quantity);
         record.setStatus(0);
+        record.setHaxi(haxi);
         record.setCreatedAt(LocalDateTime.now());
         record.setUpdatedAt(LocalDateTime.now());
         nftRecordMapper.insert(record);

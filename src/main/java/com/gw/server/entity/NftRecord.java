@@ -23,6 +23,9 @@ public class NftRecord {
     @ApiModelProperty(value = "买家钱包地址", example = "0x71c7...")
     private String walletAddress;
 
+    @ApiModelProperty(value = "交易哈希", example = "0x71c7...")
+    private String haxi;
+
     @ApiModelProperty(value = "支付金额", example = "100.00")
     private BigDecimal amount;
 

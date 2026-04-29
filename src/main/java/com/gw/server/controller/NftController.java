@@ -36,7 +36,7 @@ public class NftController {
         // 根据哈希验证是否成功
 
         String address = (String) httpRequest.getAttribute("walletAddress");
-        nftService.createPresaleRecord(address, request.getNftLevelId(), request.getQuantity());
+        nftService.createPresaleRecord(address, request.getNftLevelId(), request.getQuantity(),request.getHaxi());
         return Result.ok();
     }
 
@@ -45,8 +45,10 @@ public class NftController {
     @PostMapping("/record/create")
     public Result<Void> createNftRecord(@Valid @RequestBody CreateNftRecordRequest request,
                                         HttpServletRequest httpRequest) {
+        // 根据哈希验证是否成功
+
         String address = (String) httpRequest.getAttribute("walletAddress");
-        nftService.createNftRecord(address, request.getNftLevelId(), request.getQuantity());
+        nftService.createNftRecord(address, request.getNftLevelId(), request.getQuantity(),request.getHaxi());
         return Result.ok();
     }
 

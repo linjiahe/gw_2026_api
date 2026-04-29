@@ -29,6 +29,9 @@ public class PresaleRecord {
     @ApiModelProperty(value = "购买数量", example = "1")
     private Integer quantity;
 
+    @ApiModelProperty(value = "交易哈希", example = "0x71c7...")
+    private String haxi;
+
     @ApiModelProperty(value = "0-待确认，1-待铸造 2-已铸造 ", example = "0")
     private Integer status;
 

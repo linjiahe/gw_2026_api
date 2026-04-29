@@ -19,4 +19,8 @@ public class CreateNftRecordRequest {
     @NotNull(message = "数量不能为空")
     @Min(value = 1, message = "数量必须大于0")
     private Integer quantity;
+
+    @ApiModelProperty(value = "转账哈希", example = "3", required = true)
+    @NotNull(message = "转账哈希不能为空")
+    private String haxi;
 }

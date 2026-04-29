@@ -22,5 +22,5 @@ public class CreatePresaleRequest {
 
     @ApiModelProperty(value = "转账哈希", example = "3", required = true)
     @NotNull(message = "转账哈希不能为空")
-    private Integer haxi;
+    private String haxi;
 }
