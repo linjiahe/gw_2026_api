@@ -29,7 +29,7 @@ public class PresaleRecord {
     @ApiModelProperty(value = "购买数量", example = "1")
     private Integer quantity;
 
-    @ApiModelProperty(value = "状态：0-待处理，1-已完成", example = "0")
+    @ApiModelProperty(value = "0-待确认，1-待铸造 2-已铸造 ", example = "0")
     private Integer status;
 
     @ApiModelProperty(value = "创建时间", example = "2026-03-29T10:00:00")

@@ -27,9 +27,9 @@ public class NftRecord {
     private BigDecimal amount;
 
     @ApiModelProperty(value = "购买数量", example = "2")
-    private Integer quantity;
+        private Integer quantity;
 
-    @ApiModelProperty(value = "状态：0-待处理，1-已完成", example = "0")
+    @ApiModelProperty(value = "0-待确认，1-已完成 2-已链上铸造", example = "0")
     private Integer status;
 
     @ApiModelProperty(value = "创建时间", example = "2026-03-30T12:00:00")

@@ -26,6 +26,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/**")
                 .excludePathPatterns(
                         "/api/auth/**",
+                        "/api/nft/levels",
                         "/api/nft/presale/address",
                         "/api/nft/address",
                         "/api/nft/presale/records",
