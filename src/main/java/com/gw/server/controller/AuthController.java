@@ -28,7 +28,7 @@ public class AuthController {
         return Result.ok(Collections.singletonMap("nonce", nonce));
     }
 
-    @ApiOperation(value = "签名登录", notes = "使用钱包签名进行登录。首次登录自动注册并返回isNewUser=true；可选传入inviteCode绑定邀请人。返回JWT令牌用于后续鉴权。")
+    @ApiOperation(value = "签名登录", notes = "使用钱包签名进行登录。首次登录自动注册并返回isNewUser=true；可选传入inviteCode（邀请人钱包地址）绑定邀请人。返回JWT令牌用于后续鉴权。")
     @PostMapping("/login")
     public Result<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthService.LoginResult result = authService.login(

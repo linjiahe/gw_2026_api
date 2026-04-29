@@ -91,7 +91,7 @@ public class AuthService {
      * Verify signature and login
      */
     @Transactional
-    public LoginResult login(String address, String signature, String inviteCode) {
+    public LoginResult login(String address, String signature, String inviterAddress) {
         String normalizedAddress = address.toLowerCase();
 
         // 1. Find user
@@ -135,20 +135,21 @@ public class AuthService {
         // 6. Check if new user (last_login_at is null)
         boolean isNewUser = user.getLastLoginAt() == null;
 
-        // 7. Bind invite code (only when not yet bound)
-        if (user.getInvitedBy() == null && inviteCode != null && !inviteCode.trim().isEmpty()) {
-            // Skip if user passes their own invite code
-            if (inviteCode.trim().equalsIgnoreCase(user.getInviteCode())) {
-                log.warn("User {} passed their own invite code, skipping", normalizedAddress);
+        // 7. Bind inviter by wallet address (only when not yet bound)
+        if (user.getInvitedBy() == null && inviterAddress != null && !inviterAddress.trim().isEmpty()) {
+            String normalizedInviterAddress = inviterAddress.trim().toLowerCase();
+            // Skip if user passes their own wallet address
+            if (normalizedInviterAddress.equals(normalizedAddress)) {
+                log.warn("User {} passed their own address as inviter, skipping", normalizedAddress);
             } else {
                 User inviter = userMapper.selectOne(
-                        new LambdaQueryWrapper<User>().eq(User::getInviteCode, inviteCode.trim())
+                        new LambdaQueryWrapper<User>().eq(User::getWalletAddress, normalizedInviterAddress)
                 );
                 if (inviter == null) {
-                    throw new BusinessException("邀请码无效");
+                    throw new BusinessException("邀请人钱包地址未注册");
                 }
                 user.setInvitedBy(inviter.getId());
-                log.info("User {} invited by {} (code: {})", normalizedAddress, inviter.getWalletAddress(), inviteCode);
+                log.info("User {} invited by {} (address: {})", normalizedAddress, inviter.getId(), normalizedInviterAddress);
             }
         }
 

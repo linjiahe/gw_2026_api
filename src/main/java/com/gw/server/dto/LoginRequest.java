@@ -21,6 +21,7 @@ public class LoginRequest {
     @Pattern(regexp = "^0x[a-fA-F0-9]+$", message = "签名格式不正确")
     private String signature;
 
-    @ApiModelProperty(value = "邀请码（选填，首次登录时绑定）")
+    @ApiModelProperty(value = "邀请码（选填，首次登录时绑定，传邀请人钱包地址）", example = "0x71C7656EC7ab88b098defB751B7401B5f6d8976F")
+    @Pattern(regexp = "^(|0x[a-fA-F0-9]{40})$", message = "邀请码格式不正确")
     private String inviteCode;
 }
