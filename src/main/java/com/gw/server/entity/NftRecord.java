@@ -26,14 +26,19 @@ public class NftRecord {
     @ApiModelProperty(value = "交易哈希", example = "0x71c7...")
     private String haxi;
 
-    @ApiModelProperty(value = "支付金额", example = "100.00")
+    @ApiModelProperty(value = "价格", example = "100.00")
     private BigDecimal amount;
 
     @ApiModelProperty(value = "购买数量", example = "2")
-        private Integer quantity;
+    private Integer quantity;
 
-    @ApiModelProperty(value = "0-待确认，1-已完成 2-已链上铸造", example = "0")
+    @ApiModelProperty(value = "0-待确认，1-已完成 2-已链上铸造 -1-校验失败", example = "0")
     private Integer status;
+
+    // ================== 【核心新增字段】 ==================
+    @ApiModelProperty(value = "链上查询重试次数", example = "0")
+    private Integer retryCount;
+    // ====================================================
 
     @ApiModelProperty(value = "创建时间", example = "2026-03-30T12:00:00")
     private LocalDateTime createdAt;

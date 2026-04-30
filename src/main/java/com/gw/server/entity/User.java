@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -34,6 +35,10 @@ public class User {
     @ApiModelProperty(value = "邀请人用户ID", example = "1")
     private Integer invitedBy;
 
+    @TableField("parent_user_id")
+    @ApiModelProperty(value = "上级用户ID", example = "1")
+    private Integer parentUserId;
+
     @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间", example = "2026-03-30T10:00:00")
     private LocalDateTime createdAt;
@@ -44,4 +49,26 @@ public class User {
 
     @ApiModelProperty(value = "最后登录时间")
     private LocalDateTime lastLoginAt;
+
+    // ================== 【新增字段】 ==================
+
+    @TableField("personal_sales")
+    @ApiModelProperty(value = "个人业绩", example = "1000.00")
+    private BigDecimal personalSales;
+
+    @TableField("direct_sales")
+    @ApiModelProperty(value = "直推业绩", example = "5000.00")
+    private BigDecimal directSales;
+
+    @TableField("team_sales")
+    @ApiModelProperty(value = "团队业绩", example = "20000.00")
+    private BigDecimal teamSales;
+
+    @TableField("direct_count")
+    @ApiModelProperty(value = "直推人数", example = "5")
+    private Integer directCount;
+
+    @TableField("team_count")
+    @ApiModelProperty(value = "团队人数", example = "20")
+    private Integer teamCount;
 }

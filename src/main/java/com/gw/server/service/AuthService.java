@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.gw.server.entity.NonceRecord;
 import com.gw.server.entity.User;
+import com.gw.server.entity.UserAddress;
 import com.gw.server.exception.BusinessException;
 import com.gw.server.mapper.NonceRecordMapper;
+import com.gw.server.mapper.UserAddressMapper;
 import com.gw.server.mapper.UserMapper;
 import com.gw.server.security.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +37,13 @@ public class AuthService {
     private final UserMapper userMapper;
     private final NonceRecordMapper nonceRecordMapper;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserAddressMapper userAddressMapper;
 
-    public AuthService(UserMapper userMapper, NonceRecordMapper nonceRecordMapper, JwtTokenProvider jwtTokenProvider) {
+    public AuthService(UserMapper userMapper, NonceRecordMapper nonceRecordMapper, JwtTokenProvider jwtTokenProvider,UserAddressMapper userAddressMapper) {
         this.userMapper = userMapper;
         this.nonceRecordMapper = nonceRecordMapper;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userAddressMapper = userAddressMapper;
     }
 
     /**
@@ -87,9 +91,6 @@ public class AuthService {
         return nonce;
     }
 
-    /**
-     * Verify signature and login
-     */
     @Transactional
     public LoginResult login(String address, String signature, String inviterAddress) {
         String normalizedAddress = address.toLowerCase();
@@ -135,6 +136,23 @@ public class AuthService {
         // 6. Check if new user (last_login_at is null)
         boolean isNewUser = user.getLastLoginAt() == null;
 
+        // ================== 【新增：为新用户初始化 USDT 资产账户 和 设置邀请码】 ==================
+        if (isNewUser) {
+            // 【核心修改点】：如果是新用户，将其邀请码直接设置为其本人的钱包地址
+            user.setInviteCode(normalizedAddress);
+
+            UserAddress initAsset = new UserAddress();
+            initAsset.setUserId(user.getId());
+            initAsset.setAddress(normalizedAddress);
+            initAsset.setCoin("USDT");
+            initAsset.setBalance(java.math.BigDecimal.ZERO); // 初始余额为 0
+            initAsset.setCreatedAt(java.time.LocalDateTime.now());
+            initAsset.setUpdatedAt(java.time.LocalDateTime.now());
+
+            userAddressMapper.insert(initAsset);
+            log.info("Initialized default USDT asset and set invite code for new user: {}", normalizedAddress);
+        }
+
         // 7. Bind inviter by wallet address (only when not yet bound)
         if (user.getInvitedBy() == null && inviterAddress != null && !inviterAddress.trim().isEmpty()) {
             String normalizedInviterAddress = inviterAddress.trim().toLowerCase();
@@ -149,21 +167,26 @@ public class AuthService {
                     throw new BusinessException("邀请人钱包地址未注册");
                 }
                 user.setInvitedBy(inviter.getId());
+
+                // 如果你的业务也需要记录 parent_user_id，可以在这里顺便加上
+                // user.setParentUserId(inviter.getId());
+
                 log.info("User {} invited by {} (address: {})", normalizedAddress, inviter.getId(), normalizedInviterAddress);
             }
         }
 
-        // 8. Update last_login_at and nonce
-        user.setLastLoginAt(LocalDateTime.now());
+        // 8. Update last_login_at, nonce, and invite_code (if new user)
+        user.setLastLoginAt(java.time.LocalDateTime.now());
         userMapper.updateById(user);
 
         // 9. Generate JWT
         String token = jwtTokenProvider.generateToken(user.getId(), user.getWalletAddress());
 
         log.info("User logged in: {}, isNewUser: {}", normalizedAddress, isNewUser);
+
+        // 返回时，user.getInviteCode() 就会是最新的钱包地址了
         return new LoginResult(token, user.getId(), normalizedAddress, isNewUser, user.getInviteCode());
     }
-
     /**
      * Recover signer address from personal_sign signature
      */
